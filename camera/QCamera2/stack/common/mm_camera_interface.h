@@ -31,7 +31,7 @@
 #define __MM_CAMERA_INTERFACE_H__
 
 // System dependencies
-#include <media/msmb_camera.h>
+#include <media/msmb_camera-legacy.h>
 
 // Camera dependencies
 #include "cam_intf.h"
@@ -911,8 +911,8 @@ int32_t mm_stream_calc_offset_raw(cam_format_t fmt,
         cam_padding_info_t *padding,
         cam_stream_buf_plane_info_t *buf_planes);
 
-int32_t mm_stream_calc_offset_video(cam_format_t fmt,
-        cam_dimension_t *dim,
+int32_t mm_stream_calc_offset_video(cam_stream_info_t *stream_info,
+        cam_padding_info_t *padding,
         cam_stream_buf_plane_info_t *buf_planes);
 
 int32_t mm_stream_calc_offset_metadata(cam_dimension_t *dim,

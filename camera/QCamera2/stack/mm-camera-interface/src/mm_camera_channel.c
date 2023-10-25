@@ -532,7 +532,7 @@ static void mm_channel_process_stream_buf(mm_camera_cmdcb_t * cmd_cb,
                     ch_obj->isConfigCapture = FALSE;
                 }
 
-                if (ch_obj->isConfigCapture) {
+                if (ch_obj->isConfigCapture && ch_obj->cur_capture_idx < MAX_CAPTURE_BATCH_NUM) {
                     if (ch_obj->frameConfig.configs[ch_obj->cur_capture_idx].num_frames != 0) {
                         ch_obj->frameConfig.configs[ch_obj->cur_capture_idx].num_frames--;
                     } else {
@@ -2924,12 +2924,14 @@ int32_t mm_channel_superbuf_comp_and_enqueue(
                         }
                     }
                     queue->que.size--;
+                    last_buf_ptr = last_buf_ptr->next;
                     cam_list_del_node(&node->list);
                     free(node);
                     free(super_buf);
                     unmatched_bundles--;
+                } else {
+                    last_buf_ptr = last_buf_ptr->next;
                 }
-                last_buf_ptr = last_buf_ptr->next;
             }
 
             if (queue->attr.max_unmatched_frames < unmatched_bundles) {

@@ -49,18 +49,18 @@
     <ctl name="Voip Evrc Min Max Rate Config" id="1" value="4" />
     <ctl name="Voip Dtx Mode" value="0" />
     <ctl name="TTY Mode" value="OFF" />
-    <ctl name="HPHL Volume" value="9" />
-    <ctl name="HPHR Volume" value="9" />
+    <ctl name="HPHL Volume" value="10" />
+    <ctl name="HPHR Volume" value="10" />
     <ctl name="RX HPH Mode" value="NORMAL" />
     <ctl name="COMP0 RX1" value="0" />
     <ctl name="COMP0 RX2" value="0" />
     <ctl name="RX1 Digital Volume" value="84" />
     <ctl name="RX2 Digital Volume" value="84" />
-    <ctl name="RX3 Digital Volume" value="78" />
+    <ctl name="RX3 Digital Volume" value="80" />
     <ctl name="IIR1 INP1 Volume" value="53" />
-    <ctl name="IIR1 INP2 Volume" value="84" />
-    <ctl name="IIR1 INP3 Volume" value="84" />
-    <ctl name="IIR1 INP4 Volume" value="84" />
+    <ctl name="IIR1 INP2 Volume" value="86" />
+    <ctl name="IIR1 INP3 Volume" value="86" />
+    <ctl name="IIR1 INP4 Volume" value="86" />
     <ctl name="ADC1 Volume" value="4" />
     <ctl name="ADC2 Volume" value="4" />
     <ctl name="ADC3 Volume" value="4" />
@@ -1112,6 +1112,10 @@
         <ctl name="VoWLAN_Tx Mixer AFE_PCM_TX_VoWLAN" value="1" />
     </path>
 
+    <path name="vowlan-call speaker-and-headphones">
+        <path name="vowlan-call" />
+    </path>
+
     <path name="voicemmode1-call">
         <ctl name="PRI_MI2S_RX_Voice Mixer VoiceMMode1" value="1" />
         <ctl name="VoiceMMode1_Tx Mixer TERT_MI2S_TX_MMode1" value="1" />
@@ -1378,6 +1382,10 @@
        <path name="volte-call usb-headphones" />
     </path>
 
+    <path name="volte-call speaker-and-headphones">
+        <path name="volte-call" />
+    </path>
+
     <path name="compress-voip-call">
         <ctl name="PRI_MI2S_RX_Voice Mixer Voip" value="1" />
         <ctl name="Voip_Tx Mixer TERT_MI2S_TX_Voip" value="1" />
@@ -1480,7 +1488,7 @@
 
     <path name="wsa-speaker">
         <ctl name="RX3 MIX1 INP1" value="RX1" />
-        <ctl name="RX3 Digital Volume" value="78" />
+        <ctl name="RX3 Digital Volume" value="80" />
         <ctl name="LINE_OUT" value="Switch" />
         <ctl name="SpkrMono WSA_RDAC" value="Switch" />
    </path>
@@ -1541,6 +1549,14 @@
         <ctl name="Ext Spk Switch" value="On" />
     </path>
 
+    <path name="hph-highquality-mode">
+        <ctl name="RX HPH Mode" value="CLS_AB" />
+    </path>
+
+    <path name="hph-lowpower-mode">
+        <ctl name="RX HPH Mode" value="CLS_H_LOHIFI" />
+    </path>
+
     <path name="headset-mic">
         <path name="adc2" />
         <ctl name="ADC2 MUX" value="INP2" />
@@ -1598,7 +1614,7 @@
 
     <path name="speaker-and-headphones">
         <path name="speaker" />
-        <ctl name="RX3 Digital Volume" value="84" />
+        <ctl name="RX3 Digital Volume" value="86" />
         <path name="headphones" />
     </path>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
  * Not a Contribution.
  *
  * Copyright (C) 2013 The Android Open Source Project
@@ -4783,12 +4783,14 @@ static ssize_t out_write(struct audio_stream_out *stream, const void *buffer,
             ALOGD("copl(%p):send new gapless metadata", out);
             compress_set_gapless_metadata(out->compr, &out->gapless_mdata);
             out->send_new_metadata = 0;
+#if defined(SNDRV_COMPRESS_SET_NEXT_TRACK_PARAM)            
             if (out->send_next_track_params && out->is_compr_metadata_avail) {
                 ALOGD("copl(%p):send next track params in gapless", out);
                 compress_set_next_track_param(out->compr, &(out->compr_config.codec->options));
                 out->send_next_track_params = false;
                 out->is_compr_metadata_avail = false;
             }
+#endif
         }
         if (!(out->flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) &&
                       (out->convert_buffer) != NULL) {
@@ -6870,8 +6872,6 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
     int val;
     int ret;
     int status = 0;
-    struct listnode *node;
-    struct audio_usecase *usecase = NULL;
 
     ALOGD("%s: enter: %s", __func__, kvpairs);
     parms = str_parms_create_str(kvpairs);
@@ -6888,17 +6888,24 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
         } else {
             ALOGD("route device to handset/mic when sco is off");
             adev->bt_sco_on = false;
+        }
+    }
+
+    ret = str_parms_get_str(parms, "A2dpSuspended", value, sizeof(value));
+    if (ret>=0) {
+        if (!strncmp(value, "false", 5) &&
+            !audio_extn_a2dp_is_ready()) {
+            struct audio_usecase *usecase;
+            struct listnode *node;
             list_for_each(node, &adev->usecase_list) {
                 usecase = node_to_item(node, struct audio_usecase, list);
-                if ((usecase->type == PCM_PLAYBACK) && usecase->stream.out &&
-                    (usecase->stream.out->devices & AUDIO_DEVICE_OUT_ALL_SCO))
-                    usecase->stream.out->devices = AUDIO_DEVICE_OUT_EARPIECE;
-                else if ((usecase->type == PCM_CAPTURE) && usecase->stream.in &&
-                         (usecase->stream.in->device & AUDIO_DEVICE_IN_ALL_SCO))
+                if (usecase->stream.in && (usecase->type == PCM_CAPTURE) &&
+                    ((usecase->stream.in->device & ~AUDIO_DEVICE_BIT_IN) &
+                        AUDIO_DEVICE_IN_ALL_SCO)) {
+                    ALOGD("a2dp resumed, switch bt sco mic to handset mic");
                     usecase->stream.in->device = AUDIO_DEVICE_IN_BUILTIN_MIC;
-                else
-                    continue;
-                select_devices(adev, usecase->id);
+                    select_devices(adev, usecase->id);
+                }
             }
         }
     }
@@ -7745,9 +7752,9 @@ static int adev_dump(const audio_hw_device_t *device __unused,
 
 static int adev_close(hw_device_t *device)
 {
-    struct audio_device *adev_temp = (struct audio_device *)device;
+    struct audio_device *adev = (struct audio_device *)device;
 
-    if (!adev_temp)
+    if (!adev)
         return 0;
 
     pthread_mutex_lock(&adev_init_lock);

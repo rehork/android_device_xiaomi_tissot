@@ -181,12 +181,10 @@ Error encodeVideoTimestampInfo(VideoTimestampInfo &in, hidl_vec<uint8_t> *out) {
   return Error::NONE;
 }
 
-/*
 Error decodeYUVPlaneInfoMetadata(hidl_vec<uint8_t> &in, qti_ycbcr *out) {
   if (!in.size() || !out) {
     return Error::BAD_VALUE;
   }
-  qti_ycbcr *p = reinterpret_cast<qti_ycbcr *>(in.data());
   memcpy(out, in.data(), (YCBCR_LAYOUT_ARRAY_SIZE * sizeof(qti_ycbcr)));
   return Error::NONE;
 }
@@ -199,7 +197,6 @@ Error encodeYUVPlaneInfoMetadata(qti_ycbcr *in, hidl_vec<uint8_t> *out) {
   memcpy(out->data(), in, YCBCR_LAYOUT_ARRAY_SIZE * sizeof(qti_ycbcr));
   return Error::NONE;
 }
-*/
 
 MetadataType getMetadataType(uint32_t in) {
   switch (in) {
@@ -251,8 +248,8 @@ MetadataType getMetadataType(uint32_t in) {
       return MetadataType_RgbDataAddress;
     case QTI_COLORSPACE:
       return MetadataType_ColorSpace;
-//    case QTI_YUV_PLANE_INFO:
-//      return MetadataType_YuvPlaneInfo;
+    case QTI_YUV_PLANE_INFO:
+      return MetadataType_YuvPlaneInfo;
     default:
       return MetadataType_Invalid;
   }
@@ -365,9 +362,9 @@ Error get(void *buffer, uint32_t type, void *param) {
       err = static_cast<Error>(android::gralloc4::decodeUint32(qtigralloc::MetadataType_ColorSpace,
                                                                bytestream, (uint32_t *)param));
       break;
-//    case QTI_YUV_PLANE_INFO:
-//      err = decodeYUVPlaneInfoMetadata(bytestream, (qti_ycbcr *)param);
-//      break;
+    case QTI_YUV_PLANE_INFO:
+      err = decodeYUVPlaneInfoMetadata(bytestream, (qti_ycbcr *)param);
+      break;
     default:
       param = nullptr;
       return Error::UNSUPPORTED;
